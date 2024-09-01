@@ -1,0 +1,28 @@
+name: Verify Dependencies
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  verify-dependencies:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Run verify_dependencies.ts
+        run: |
+          if [ ! -f "./verify_dependencies.ts" ]; then
+            echo "File verify_dependencies.ts not found!"
+            exit 1
+          fi
+          bun run ./verify_dependencies.ts
