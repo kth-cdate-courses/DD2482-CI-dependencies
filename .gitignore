@@ -1,3 +1,5 @@
 .nx
 
 node_modules
+
+packages/components
