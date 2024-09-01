@@ -32,7 +32,10 @@ for (const file of packageJsonFiles) {
     devDependencyDictionary[file].push(`${name}@${version}`);
   }
 }
-const versionDicitonary = compileVersionDictionary(dependencyDictionary);
+const versionDicitonary = compileVersionDictionary({
+  ...dependencyDictionary,
+  ...devDependencyDictionary,
+});
 const faultReport = getFaultReport(versionDicitonary);
 if (Object.keys(faultReport).length > 0) {
   console.error('Dependency version mismatch found in the following projects:');
@@ -102,7 +105,7 @@ function getFaultReport(versionDictionary: VersionDictionary) {
 
         faultReport[project][
           library
-        ] = `Has version ${version} but should have ${sortedVersions[0]}`;
+        ] = `Has version ${version} but should be ${sortedVersions[0]}`;
       }
     }
   }
