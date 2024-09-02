@@ -205,9 +205,6 @@ importers:
 
   apps/dashboard:
     dependencies:
-      '@devops/components':
-        specifier: workspace:*
-        version: link:../../packages/components
       '@devops/format':
         specifier: workspace:*
         version: link:../../packages/format
@@ -260,9 +257,6 @@ importers:
 
   apps/official-site:
     dependencies:
-      '@devops/components':
-        specifier: workspace:*
-        version: link:../../packages/components
       '@devops/format':
         specifier: workspace:*
         version: link:../../packages/format
