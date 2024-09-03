@@ -75,12 +75,12 @@ function compileVersionDictionary(deps: Record<string, string[]>) {
     }
   }
 
-  return Object.entries(versionDictionary)
-    .filter(([_, versions]) => Object.keys(versions).length > 1)
-    .reduce<VersionDictionary>((total, current) => {
-      total[current[0]] = current[1];
-      return total;
-    }, {});
+  // We're interested in deps with multiple versions
+  return Object.fromEntries(
+    Object.entries(versionDictionary)
+      .filter(([_, versions]) => Object.keys(versions).length > 1)
+  );
+
 }
 
 type FaultReport = Record<string, Record<string, string>>;
@@ -88,7 +88,7 @@ function getFaultReport(versionDictionary: VersionDictionary) {
   /* example format of fault report
     {
         <project>: {
-            <library>: "Has version <version> but should have <version>" 
+            <library>: "Has version <version> but should have <version>"
         }
     }
     */
