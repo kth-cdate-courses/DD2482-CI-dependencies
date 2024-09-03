@@ -32,13 +32,13 @@ for (const file of packageJsonFiles) {
     devDependencyDictionary[file].push(`${name}@${version}`);
   }
 }
-const versionDicitonary = compileVersionDictionary({
+const versionDictionary = compileVersionDictionary({
   ...dependencyDictionary,
   ...devDependencyDictionary,
 });
-const faultReport = getFaultReport(versionDicitonary);
+const faultReport = getFaultReport(versionDictionary);
 if (Object.keys(faultReport).length > 0) {
-  console.error('Dependency version mismatch found in the following projects:');
+  console.error('The following dependency inconsistencies were found:');
   console.error(faultReport);
   process.exit(1);
 }
@@ -95,22 +95,41 @@ function getFaultReport(versionDictionary: VersionDictionary) {
   const faultReport: FaultReport = {};
 
   for (const [library, versions] of Object.entries(versionDictionary)) {
-    const versionKeys = Object.keys(versions);
-    const sortedVersions = versionKeys.toSorted(compareSemVer);
-    for (const version of sortedVersions.slice(1)) {
-      for (const project of versions[version]) {
+
+    const versionOccurrencesSorted = Object.entries(versions)
+      .toSorted(([version, projects]) => projects.length)
+
+
+
+
+
+    // Invariant: versionOccurrences.length > 1, as we have already filtered out deps with only one version.
+    if (versionOccurrencesSorted[0][1].length == versionOccurrencesSorted[1][1].length) {
+      // Warn if there is no majority // TODO: majority == most occurences or > 50%?
+      const occurencesString = Object.entries(versions).flatMap((_, projects) => projects).join("\n - ")
+      faultReport[library]["throughout project"] = `There is no majority version for library ${library}. It occurs in the following projects:\n${occurencesString}`;
+
+      continue
+    }
+
+    // There is a majority
+    const majorityVersion = versionOccurrencesSorted[0][0]
+    for (const [version, projects] of versionOccurrencesSorted.splice(1)) {
+      for (const project of projects) {
         if (faultReport[project] === undefined) {
           faultReport[project] = {};
         }
 
-        faultReport[project][
-          library
-        ] = `Has version ${version} but should be ${sortedVersions[0]}`;
+        faultReport[project][library] = `Has version ${version} but majority version throughout monorepo is ${majorityVersion}`;
       }
     }
+
   }
   return faultReport;
 }
+// faultReport[project][
+//   library
+// ] = `Has version ${version} but should be ${sortedVersions[0]}`;
 
 function splitVersion(dependency: string) {
   const splits = dependency.split('@');
