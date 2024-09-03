@@ -29,7 +29,7 @@ function App() {
       </p>
       <p>{DateTime.now().toFormat('yyyy-MM-dd')}</p>
       <Button onClick={() => setCounter(counter + 1)}>
-        Click me: {counter}
+        Click me: {counter < 13 ? counter : counter + 1}
       </Button>
     </>
   );
