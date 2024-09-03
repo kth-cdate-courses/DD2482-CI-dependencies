@@ -105,9 +105,13 @@ function getFaultReport(versionDictionary: VersionDictionary) {
 
     // Invariant: versionOccurrences.length > 1, as we have already filtered out deps with only one version.
     if (versionOccurrencesSorted[0][1].length == versionOccurrencesSorted[1][1].length) {
+      if (faultReport[library] === undefined) {
+        faultReport[library] = {};
+      }
       // Warn if there is no majority // TODO: majority == most occurences or > 50%?
-      const occurencesString = Object.entries(versions).flatMap((_, projects) => projects).join("\n - ")
-      faultReport[library]["throughout project"] = `There is no majority version for library ${library}. It occurs in the following projects:\n${occurencesString}`;
+      const occurencesString = Object.entries(versions).map(([version, projects]) => projects.map((project) => ` ${project}: ${version}`))
+      // @ts-ignore
+      faultReport[library] = `There is no majority version for library ${library}. It occurs in the following projects: ${occurencesString}`;
 
       continue
     }
