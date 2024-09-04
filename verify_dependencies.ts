@@ -69,7 +69,6 @@ function compileVersionDictionary(deps: Record<string, string[]>) {
 
   const versionDictionary: VersionDictionary = {};
   for (const [file, dependencies] of Object.entries(deps)) {
-    console.log('FILE', file, dependencies);
     for (const dependecy of dependencies) {
       const [dependencyName, dependencyVersion] = splitVersion(dependecy);
       if (versionDictionary[dependencyName] === undefined) {
